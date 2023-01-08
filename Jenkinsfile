@@ -9,13 +9,17 @@ node{
     }
     stage('Pushing the Docker image to Docker HUB')
     {
-        withCredentials([string(credentialsId: 'DockerPasswd', variable: 'DockerPasswd')]) {
+        withCredentials([string(credentialsId: 'DockerPasswd', variable: 'DockerPasswd')]) 
+	{
            sh "docker login -u thanish -p ${DockerPasswd}"
            sh 'docker image push thanish/$JOB_NAME:v1.$BUILD_ID'
            sh 'docker image push thanish/$JOB_NAME:latest'
            sh 'docker image rm $JOB_NAME:v1.$BUILD_ID thanish/$JOB_NAME:v1.$BUILD_ID  thanish/$JOB_NAME:latest'
-            
-        }
+        } 
+	stage("Docker Container Deployment")
+	{
+	def docker_run = 'docker run -p 9000:80 -d --name cloudgen thanish/web-build-pipe-line'
+	sshagent
 
     }
 }
